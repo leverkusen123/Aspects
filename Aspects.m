@@ -436,7 +436,9 @@ static void _aspect_modifySwizzledClasses(void (^block)(NSMutableSet *swizzledCl
 static Class aspect_swizzleClassInPlace(Class klass) {
     NSCParameterAssert(klass);
     NSString *className = NSStringFromClass(klass);
-
+    if (class_isMetaClass(klass)) {
+        className = [NSString stringWithFormat:@"meta_%@", className];
+    }
     _aspect_modifySwizzledClasses(^(NSMutableSet *swizzledClasses) {
         if (![swizzledClasses containsObject:className]) {
             aspect_swizzleForwardInvocation(klass);
@@ -449,7 +451,9 @@ static Class aspect_swizzleClassInPlace(Class klass) {
 static void aspect_undoSwizzleClassInPlace(Class klass) {
     NSCParameterAssert(klass);
     NSString *className = NSStringFromClass(klass);
-
+    if (class_isMetaClass(klass)) {
+        className = [NSString stringWithFormat:@"meta_%@", className];
+    }
     _aspect_modifySwizzledClasses(^(NSMutableSet *swizzledClasses) {
         if ([swizzledClasses containsObject:className]) {
             aspect_undoSwizzleForwardInvocation(klass);
